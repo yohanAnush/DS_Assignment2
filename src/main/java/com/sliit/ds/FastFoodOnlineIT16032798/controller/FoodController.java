@@ -41,4 +41,12 @@ public class FoodController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @RequestMapping(value = "/food/update", method = RequestMethod.PUT)
+    public ResponseEntity<String> updateFood(@RequestBody Map<String, Object> payload) {
+        Food foodUpdate = new Food(payload);
+        foodService.updateFood(foodUpdate);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

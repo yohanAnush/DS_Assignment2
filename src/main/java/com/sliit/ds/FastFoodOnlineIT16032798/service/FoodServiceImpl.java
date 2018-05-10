@@ -42,8 +42,17 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public void updateFood(Food foodUpdate) {
-        //foodRepository.
+        Food foodExisting = findByName(foodUpdate.getName());
 
+        // update the item we retrieved.
+        // DON'T update the fId.
+        if (foodExisting != null) {
+            foodExisting.setIngredients(foodUpdate.getIngredients());
+            foodExisting.setPrice(foodUpdate.getPrice());
+            foodExisting.setPrice(foodUpdate.getPrice());
+
+            saveFood(foodExisting);
+        }
     }
 
     @Override

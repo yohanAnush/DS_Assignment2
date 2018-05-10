@@ -84,6 +84,12 @@ public class Food {
         String[] ingredientsArr = ingredientsStr.split(",");
 
         for(String ingredient: ingredientsArr) {
+
+            // since we split by the comma, when the string looks like Chillie paste, Chicken there will be a,
+            // space before Chicken as an example. Therefore we need to remove that just for the neatness.
+            if (ingredient.startsWith(" ")) {
+                ingredient = ingredient.replaceFirst(" ", "");  // do only once, otherwise intended spaces will get replaced as well.
+            }
             ingredientsList.add(ingredient);
         }
 
