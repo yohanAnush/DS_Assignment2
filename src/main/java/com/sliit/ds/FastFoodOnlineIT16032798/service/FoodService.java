@@ -16,7 +16,7 @@ public interface FoodService {
 
     void deleteFoodById(String name);
 
-    List<Food> findAllFood();
+    Iterable<Food> findAllFood();
 
     public boolean isFoodExist(Food food);
 }

@@ -1,14 +1,18 @@
 package com.sliit.ds.FastFoodOnlineIT16032798.repository;
 
 import com.sliit.ds.FastFoodOnlineIT16032798.model.Food;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.CrudRepository;
 
-public interface FoodRepository extends CrudRepository<Food, String> {
+import java.util.List;
 
-    Food findFoodByName(final String name);
-    Food findFoodByFId(final String fId);
+public interface FoodRepository extends MongoRepository<Food, String> {
 
-    void deleteFoodByFId(final String fId);
-    void deleteFoodByName(final String name);
+    Food findFoodByName(String name);
+    Food findFoodByFId(String fId);
+    List<Food> findFoodsByName(String name);
+
+    void deleteFoodByFId(String fId);
+    void deleteFoodByName(String name);
 
 }

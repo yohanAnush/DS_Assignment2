@@ -16,6 +16,9 @@ public class Food {
     private ArrayList<String> ingredients;
     private double price;
 
+    public Food() {
+
+    }
     public Food(String name, int servingCount, ArrayList<String> ingredients, double price) {
         this.fId = "FD" + Long.toString(name.hashCode());
         this.name = name;
@@ -29,6 +32,7 @@ public class Food {
         this.fId = "FD" + Long.toString(this.name.hashCode());
         this.servingCount = Integer.parseInt(payload.get("servingCount").toString());
         this.price = Double.parseDouble(payload.get("price").toString());
+        this.ingredients = getIngredientsList(payload.get("ingredients"));
     }
 
     public String getfId() {
@@ -65,5 +69,24 @@ public class Food {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public ArrayList<String> getIngredientsList(Object ingredients) {
+        ArrayList<String> ingredientsList = new ArrayList<>();
+        String ingredientsStr = ingredients.toString();
+
+        // ingredients string will be enclosed in [] brackets, and separated by a comma.
+        // ex: [Rice, Carrot, Leaks, Chicken pieces, Chillie paste]
+        //remove the square brackets.
+        ingredientsStr = ingredientsStr.replace("[", "");
+        ingredientsStr = ingredientsStr.replace("]", "");
+        // separate the individual ingredients.
+        String[] ingredientsArr = ingredientsStr.split(",");
+
+        for(String ingredient: ingredientsArr) {
+            ingredientsList.add(ingredient);
+        }
+
+        return ingredientsList;
     }
 }
