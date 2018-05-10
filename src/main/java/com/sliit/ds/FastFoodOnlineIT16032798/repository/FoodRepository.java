@@ -11,6 +11,7 @@ public interface FoodRepository extends MongoRepository<Food, String> {
     Food findFoodByName(String name);
     Food findFoodByFId(String fId);
     List<Food> findFoodsByName(String name);
+    List<Food> findFoodByNameContaining(String name);
 
     void deleteFoodByFId(String fId);
     void deleteFoodByName(String name);

@@ -23,14 +23,15 @@ public class FoodController {
         Iterable<Food> foodItems = foodService.findAllFood();
         List<Food> returnFoodItems = new ArrayList<>();
 
+        // add food items in the iterable to a list using a lambda.
         foodItems.forEach(returnFoodItems::add);
 
-        return new ResponseEntity<List<Food>>(returnFoodItems, HttpStatus.OK);
+        return new ResponseEntity<>(returnFoodItems, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/food/{name}", method = RequestMethod.GET)
-    public ResponseEntity<Food> getFoodByName(@PathVariable String name) {
-        return new ResponseEntity<>(foodService.findByName(name), HttpStatus.OK);
+    public ResponseEntity<List<Food>> getFoodByName(@PathVariable String name) {
+        return new ResponseEntity<>(foodService.findFoodContainingName(name), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/food/add", method = RequestMethod.POST)

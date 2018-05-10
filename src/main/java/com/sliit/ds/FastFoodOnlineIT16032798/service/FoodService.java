@@ -10,6 +10,8 @@ public interface FoodService {
 
     Food findByName(String name);
 
+    List<Food> findFoodContainingName(String name);
+
     void saveFood(Food food);
 
     void updateFood(Food foodUpdate);

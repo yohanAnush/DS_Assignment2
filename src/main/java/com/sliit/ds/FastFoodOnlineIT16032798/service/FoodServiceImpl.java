@@ -17,10 +17,6 @@ public class FoodServiceImpl implements FoodService {
 
     private static List<Food> foodItems;
 
-    public void addFood(Food food) {
-        foodRepository.save(food);
-    }
-
     @Override
     public Food findById(String fId) {
         return foodRepository.findFoodByFId(fId);
@@ -30,7 +26,16 @@ public class FoodServiceImpl implements FoodService {
     public Food findByName(String name) {
         return foodRepository.findFoodByName(name);
     }
-    
+
+    @Override
+    public List<Food> findFoodContainingName(String name) {
+        Iterable<Food> foodIterable = foodRepository.findFoodByNameContaining(name);
+        List<Food> foodList = new ArrayList<>();
+
+        foodIterable.forEach(foodList::add);
+        return foodList;
+    }
+
     public void saveFood(Food food) {
         foodRepository.save(food);
     }
