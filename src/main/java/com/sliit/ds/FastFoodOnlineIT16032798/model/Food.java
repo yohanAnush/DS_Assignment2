@@ -16,9 +16,8 @@ public class Food {
     private ArrayList<String> ingredients;
     private double price;
 
-    public Food() {
+    public Food() { }
 
-    }
     public Food(String name, int servingCount, ArrayList<String> ingredients, double price) {
         this.fId = "FD" + Long.toString(name.hashCode());
         this.name = name;
@@ -71,6 +70,7 @@ public class Food {
         this.price = price;
     }
 
+    // we are dealing with a json array here.
     public ArrayList<String> getIngredientsList(Object ingredients) {
         ArrayList<String> ingredientsList = new ArrayList<>();
         String ingredientsStr = ingredients.toString();
