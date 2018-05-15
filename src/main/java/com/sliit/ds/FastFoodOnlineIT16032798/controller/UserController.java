@@ -35,4 +35,13 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    // UPDATE existing user.
+    @RequestMapping(value = "/user/update",  method = RequestMethod.PUT)
+    public ResponseEntity<String> updateUser(@RequestBody Map<String, Object> updatePayload) {
+        User user = new User(updatePayload);
+        userService.updateUser(user);
+
+       return ResponseEntity.status((HttpStatus.OK)).build();
+    }
 }

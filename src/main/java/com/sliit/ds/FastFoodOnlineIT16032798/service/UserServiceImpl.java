@@ -49,14 +49,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void updateUser(User userUpdate) {
+        System.out.println(userUpdate.getUid());
         User userExisting = userRepository.findByUid(userUpdate.getUid());
 
         // update everything but uid.
-        userExisting.setEmail(userUpdate.getEmail());
-        userExisting.setName(userUpdate.getEmail());
-        userExisting.setMobileNumbers(userUpdate.getMobileNumbers());
+        if (userExisting != null) {
+            userExisting.setEmail(userUpdate.getEmail());
+            userExisting.setName(userUpdate.getName());
+            userExisting.setMobileNumbers(userUpdate.getMobileNumbers());
 
-        saveUser(userExisting);
+            saveUser(userExisting);
+        }
     }
 
     @Override
