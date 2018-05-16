@@ -2,21 +2,26 @@ package com.sliit.ds.FastFoodOnlineIT16032798.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.ArrayList;
-import java.util.Map;
+import javax.validation.constraints.NotEmpty;
 
 @Document(collection = "user")
 public class User {
+
     @Id
     private long uid = 0;   // is auto generated.
+
+    @NotEmpty
     private String email;
+
+    @NotEmpty
     private String name;
-    private ArrayList<Integer> mobileNumbers = new ArrayList<>();
+
+    @NotEmpty
+    private int mobileNumber;
 
     public User() { }
 
-    public User(long uid, String email, String name, int mobileNumber) {
+    /*public User(long uid, String email, String name, int mobileNumber) {
         // we pass 0(in the payload) if we want the system to assign the uid.
         // else we pass the known uid(must be non-zero).
         this.uid = (uid == 0) ? (email+name).hashCode() : uid;
@@ -25,9 +30,9 @@ public class User {
         this.name = name;
         this.mobileNumbers.add(mobileNumber);
 
-    }
+    }*/
 
-    public User(Map<String, Object> payload) {
+    /*public User(Map<String, Object> payload) {
         this.email = payload.get("email").toString();
         this.name = payload.get("name").toString();
         this.mobileNumbers.add(Integer.parseInt(payload.get("mobile").toString()));
@@ -38,7 +43,7 @@ public class User {
         long uidInPayload = Long.parseLong(payload.get("uid").toString());
         this.uid = (uidInPayload == 0) ? (this.email+this.name).hashCode() : Long.parseLong(payload.get("uid").toString());
 
-    }
+    }*/
 
     public long getUid() {
         return uid;
@@ -64,20 +69,12 @@ public class User {
         this.name = name;
     }
 
-    public ArrayList<Integer> getMobileNumbers() {
-        return mobileNumbers;
+    public int getMobileNumber() {
+        return this.mobileNumber;
     }
 
-    public void setMobileNumbers(int [] mobileNumbers) {
-        for (int mobileNumber: mobileNumbers) {
-            this.mobileNumbers.add(mobileNumber);
-        }
+    public void setMobileNumber(int mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
-    // we need to use this when we are updating a user since the user object only returns an ArrayList
-    // for mobileNumbers.
-    public void setMobileNumbers(ArrayList<Integer> mobileNumbers) {
-        for (int mobileNumber: mobileNumbers) {
-            this.mobileNumbers.add(mobileNumber);
-        }
-    }
+
 }

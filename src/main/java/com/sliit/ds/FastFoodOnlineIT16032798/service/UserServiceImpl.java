@@ -16,30 +16,19 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
 
-    private static List<User> userList;
-
-
     @Override
     public User findByUid(long uid) {
         return userRepository.findByUid(uid);
     }
+
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
-    public User findByName(String name) {
-        return userRepository.findByName(name);
-    }
-
-    @Override
     public List<User> findUsersHavingName(String name) {
-        Iterable<User> userIterable = userRepository.findUsersByNameContaining(name);
-        List<User>userList = new ArrayList<>();
-
-        userIterable.forEach(userList::add);
-        return userList;
+        return userRepository.findUsersByNameContaining(name);
     }
 
     @Override
@@ -48,15 +37,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void updateUser(User userUpdate) {
-        System.out.println(userUpdate.getUid());
+    public void updateUser(long uid, User userUpdate) {
+        if (uid != userUpdate.getUid()) { userUpdate.setUid(uid); } // in case the frontend sends a dummy id.
+
         User userExisting = userRepository.findByUid(userUpdate.getUid());
 
-        // update everything but uid.
         if (userExisting != null) {
             userExisting.setEmail(userUpdate.getEmail());
             userExisting.setName(userUpdate.getName());
-            userExisting.setMobileNumbers(userUpdate.getMobileNumbers());
+            userExisting.setMobileNumber(userUpdate.getMobileNumber());
 
             saveUser(userExisting);
         }
@@ -69,12 +58,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> findAllUsers() {
+        return userRepository.findAll();
 
-        Iterable<User> userIterable = userRepository.findAll();
-        userList = new ArrayList<>();   // we are using the static list in the class.
-
-        userIterable.forEach(userList::add);
-        return userList;
     }
 
     @Override

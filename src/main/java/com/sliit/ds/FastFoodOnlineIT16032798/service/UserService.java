@@ -10,13 +10,11 @@ public interface UserService {
 
     User findByEmail(String email);
 
-    User findByName(String name);
-
     List<User> findUsersHavingName(String name);
 
     void saveUser(User user);
 
-    void updateUser(User userUpdate);
+    void updateUser(long uid, User userUpdate);
 
     void deleteUserByEmail(String email);
 
