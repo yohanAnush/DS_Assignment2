@@ -27,12 +27,12 @@ public class UserController {
 
     // GET specific user by its uid, email or name.
     @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUserByUid(@PathVariable("id") long uid) {
+    public ResponseEntity<User> getUserByUid(@RequestParam("id") long uid) {
         return new ResponseEntity<>(userService.findByUid(uid), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/email/{email}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
+    public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
         return new ResponseEntity<>(userService.findByEmail(email), HttpStatus.OK);
     }
 

@@ -34,6 +34,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> getAllPayments() {
+        List<Payment> l = paymentRepository.findAll();
+        System.out.println(l.size());
         return paymentRepository.findAll();
     }
 
