@@ -4,15 +4,17 @@ import com.sliit.ds.FastFoodOnlineIT16032798.model.User;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/user")
 public class UserController {
 
@@ -45,21 +47,36 @@ public class UserController {
     // ADD a new user.
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> addUser(@RequestBody User user) {
-
         user.setUid((user.getEmail()+user.getName()).hashCode());
         userService.saveUser(user);
         // TODO ensure the email is not already in the database.
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status((HttpStatus.CREATED)).build();
     }
 
 
     // UPDATE existing user.
     @RequestMapping(value = "/{id}",  method = RequestMethod.PUT)
     public ResponseEntity<String> updateUser(@PathVariable("id") long uid, @RequestBody User userUpdate) {
-
         userService.updateUser(uid, userUpdate);
 
-       return ResponseEntity.status((HttpStatus.OK)).build();
+        return ResponseEntity.status((HttpStatus.OK)).build();
+    }
+
+    // CHANGE password.
+    @RequestMapping(value = "/password", method = RequestMethod.PUT)
+    public ResponseEntity<String> updateUserPassword(@RequestBody Map<String, Object> payload) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    // VALIDATE user.
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public ResponseEntity<HashMap<String,String>> login(@RequestBody Map<String, Object> payload) {
+        String email = payload.get("email").toString();
+        String password = payload.get("email").toString();
+
+        HashMap<String, String> status = new HashMap<>();
+        status.put("success", "true");
+       return new ResponseEntity(status, HttpStatus.OK);
     }
 }

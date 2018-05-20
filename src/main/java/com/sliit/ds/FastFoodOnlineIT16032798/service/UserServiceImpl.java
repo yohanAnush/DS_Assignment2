@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService{
             userExisting.setEmail(userUpdate.getEmail());
             userExisting.setName(userUpdate.getName());
             userExisting.setMobileNumber(userUpdate.getMobileNumber());
-
+            userExisting.setAddress(userUpdate.getAddress());
             saveUser(userExisting);
         }
     }
@@ -59,11 +59,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> findAllUsers() {
         return userRepository.findAll();
-
     }
 
     @Override
     public boolean isUserExist(User user) {
         return userRepository.existsById(Long.toString(user.getUid()));
     }
+
 }

@@ -19,31 +19,10 @@ public class User {
     @NotEmpty
     private int mobileNumber;
 
+    @NotEmpty
+    private String address;
+
     public User() { }
-
-    /*public User(long uid, String email, String name, int mobileNumber) {
-        // we pass 0(in the payload) if we want the system to assign the uid.
-        // else we pass the known uid(must be non-zero).
-        this.uid = (uid == 0) ? (email+name).hashCode() : uid;
-
-        this.email = email;
-        this.name = name;
-        this.mobileNumbers.add(mobileNumber);
-
-    }*/
-
-    /*public User(Map<String, Object> payload) {
-        this.email = payload.get("email").toString();
-        this.name = payload.get("name").toString();
-        this.mobileNumbers.add(Integer.parseInt(payload.get("mobile").toString()));
-
-        // we pass 0(in the payload) if we want the system to assign the uid.
-        // else we pass the known uid(must be non-zero).
-        // for updating purposes in the database, pass the existing uid.
-        long uidInPayload = Long.parseLong(payload.get("uid").toString());
-        this.uid = (uidInPayload == 0) ? (this.email+this.name).hashCode() : Long.parseLong(payload.get("uid").toString());
-
-    }*/
 
     public long getUid() {
         return uid;
@@ -77,4 +56,11 @@ public class User {
         this.mobileNumber = mobileNumber;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

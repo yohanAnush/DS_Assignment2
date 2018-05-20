@@ -15,5 +15,4 @@ public interface FoodRepository extends MongoRepository<Food, String> {
 
     void deleteFoodByFId(String fId);
     void deleteFoodByName(String name);
-
 }

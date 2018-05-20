@@ -13,13 +13,16 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@CrossOrigin
+@RequestMapping("/food")
 public class FoodController {
 
     @Autowired FoodServiceImpl foodService = new FoodServiceImpl();
 
 
     // GET all the food items in the database.
-    @RequestMapping(value = "/food", method = RequestMethod.GET)
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Food>> getAllFood() {
         Iterable<Food> foodItems = foodService.findAllFood();
         List<Food> returnFoodItems = new ArrayList<>();
@@ -30,14 +33,24 @@ public class FoodController {
         return new ResponseEntity<>(returnFoodItems, HttpStatus.OK);
     }
 
+    // GET a food item buy its id.
+    @CrossOrigin
+    @RequestMapping(value = "auth/{authKey}/id/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Food> getFoodById(@PathVariable("id") String id, @PathVariable("authKey") long authKey) {
+        System.out.println(authKey);
+        return new ResponseEntity<>(foodService.findById(id), HttpStatus.OK);
+    }
+
     // FIND a food item by its name.
-    @RequestMapping(value = "/food/{name}", method = RequestMethod.GET)
+    @CrossOrigin
+    @RequestMapping(value = "name/{name}", method = RequestMethod.GET)
     public ResponseEntity<List<Food>> getFoodByName(@PathVariable String name) {
         return new ResponseEntity<>(foodService.findFoodContainingName(name), HttpStatus.OK);
     }
 
     // ADD a new food item.
-    @RequestMapping(value = "/food/add", method = RequestMethod.POST)
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> addFood(@RequestBody Map<String, Object> payload/*@RequestParam String name, @RequestParam int servingCount, @RequestParam ArrayList<String> ingredients, @RequestParam double price*/) {
         Food food = new Food(payload);
         foodService.saveFood(food);
@@ -46,7 +59,8 @@ public class FoodController {
     }
 
     // UPDATE an existing food item.(Update everything but the name).
-    @RequestMapping(value = "/food/update", method = RequestMethod.PUT)
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<String> updateFood(@RequestBody Map<String, Object> payload) {
         Food foodUpdate = new Food(payload);
         foodService.updateFood(foodUpdate);
