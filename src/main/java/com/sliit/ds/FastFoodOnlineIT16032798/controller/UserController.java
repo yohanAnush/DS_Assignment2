@@ -1,6 +1,8 @@
 package com.sliit.ds.FastFoodOnlineIT16032798.controller;
 
+import com.sliit.ds.FastFoodOnlineIT16032798.model.Session;
 import com.sliit.ds.FastFoodOnlineIT16032798.model.User;
+import com.sliit.ds.FastFoodOnlineIT16032798.service.SessionServiceImpl;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class UserController {
 
     @Autowired
     private UserServiceImpl userService = new UserServiceImpl();
+
+    @Autowired
+    private SessionServiceImpl sessionService = new SessionServiceImpl();
 
     // GET all users in the database.
     @RequestMapping(method = RequestMethod.GET)
@@ -78,5 +83,45 @@ public class UserController {
         HashMap<String, String> status = new HashMap<>();
         status.put("success", "true");
        return new ResponseEntity(status, HttpStatus.OK);
+    }
+
+    // AUTHENTICATION.
+    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    public ResponseEntity<HashMap<String, Object>> issueAuthKey(@RequestBody Map<String, Object> payload) {
+
+        String email = payload.get("email").toString();
+        String password = payload.get("password").toString();
+        boolean validUser = userService.isPasswordCorrect(email, password);  // will return false if the user is not there anyways.
+        Map<String, Object> response = new HashMap<>();
+
+        // if the user is there and the password is correct,
+        if (validUser) {
+            long authKey = email.hashCode()*12;
+            //if (authKey < 0) { authKey = authKey * -1; }
+            // we need to store this key in the database for authenticating each proceeding request.
+            Session session = new Session();
+            session.setUid(userService.getUidOfEmail(email));
+            session.setAuthKeyOfUid(authKey);
+            sessionService.saveSession(session);
+
+            response.put("success", true);
+            response.put("data", session);
+
+            return new ResponseEntity(response, HttpStatus.OK);
+        }
+        else {
+            response.put("success", false);
+            return new ResponseEntity(response, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/invoke", method = RequestMethod.DELETE)
+    public ResponseEntity<Map<String, Object>> invokeAuthentication(@RequestHeader("Authentication") long authKey, @RequestHeader("ClientId") long uid) {
+        sessionService.invokeSessionOfUser(uid);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -10,6 +10,10 @@ public interface UserService {
 
     User findByEmail(String email);
 
+    long getUidOfEmail(String email);
+
+    String getEmailOfUid(long uid);
+
     List<User> findUsersHavingName(String name);
 
     void saveUser(User user);
@@ -20,5 +24,8 @@ public interface UserService {
 
     List<User> findAllUsers();
 
-    public boolean isUserExist(User user);
+     boolean isUserExist(long uid);
+
+     boolean isPasswordCorrect(String email, String password);
+
 }

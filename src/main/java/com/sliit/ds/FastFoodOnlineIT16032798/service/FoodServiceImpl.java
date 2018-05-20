@@ -61,7 +61,7 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Iterable<Food> findAllFood() {
+    public List<Food> findAllFood() {
         return foodRepository.findAll();
     }
 

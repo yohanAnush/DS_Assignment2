@@ -27,6 +27,18 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public long getUidOfEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return (user != null) ? user.getUid() : 0;
+    }
+
+    @Override
+    public String getEmailOfUid(long uid) {
+        User user = userRepository.findByUid(uid);
+        return (user != null) ? user.getEmail() : "";
+    }
+
+    @Override
     public List<User> findUsersHavingName(String name) {
         return userRepository.findUsersByNameContaining(name);
     }
@@ -62,8 +74,16 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean isUserExist(User user) {
-        return userRepository.existsById(Long.toString(user.getUid()));
+    public boolean isUserExist(long uid) {
+        return userRepository.existsById(Long.toString(uid));
+    }
+
+    @Override
+    public boolean isPasswordCorrect(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        boolean validity = (user != null) && (user.getPassword().equals(password));
+
+        return validity;
     }
 
 }

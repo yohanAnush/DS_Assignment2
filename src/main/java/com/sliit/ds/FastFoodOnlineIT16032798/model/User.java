@@ -22,6 +22,9 @@ public class User {
     @NotEmpty
     private String address;
 
+    @NotEmpty
+    private String password;
+
     public User() { }
 
     public long getUid() {
@@ -59,8 +62,15 @@ public class User {
     public String getAddress() {
         return address;
     }
-
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
