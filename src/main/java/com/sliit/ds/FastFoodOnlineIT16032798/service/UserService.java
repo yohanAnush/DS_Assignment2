@@ -24,8 +24,8 @@ public interface UserService {
 
     List<User> findAllUsers();
 
-     boolean isUserExist(long uid);
+    boolean isUserExist(long uid);
 
-     boolean isPasswordCorrect(String email, String password);
+    boolean isPasswordCorrect(String email, long password);
 
 }

@@ -36,6 +36,18 @@ public class FoodServiceImpl implements FoodService {
         return foodList;
     }
 
+    @Override
+    public double getPriceOf(String fId) {
+        Food food = foodRepository.findFoodByFId(fId);
+        double price = -1;
+
+        if (food != null) {
+            price = food.getPrice();
+        }
+
+        return price;
+    }
+
     public void saveFood(Food food) {
         foodRepository.save(food);
     }

@@ -2,6 +2,7 @@ package com.sliit.ds.FastFoodOnlineIT16032798.controller;
 
 import com.sliit.ds.FastFoodOnlineIT16032798.model.Payment;
 import com.sliit.ds.FastFoodOnlineIT16032798.repository.SessionRepository;
+import com.sliit.ds.FastFoodOnlineIT16032798.service.FoodServiceImpl;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.PaymentServiceImpl;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.SessionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@CrossOrigin
 @RequestMapping(value = "/payment")
+@CrossOrigin(origins = "http://localhost:8080")
 public class PaymentController {
 
 
@@ -25,6 +26,9 @@ public class PaymentController {
 
     @Autowired
     private SessionServiceImpl sessionService = new SessionServiceImpl();
+
+    @Autowired
+    private FoodServiceImpl foodService;
 
 
     // GET all payment entries in the database.
@@ -46,10 +50,15 @@ public class PaymentController {
     }
 
     // ADD new entry for payment.
-    @RequestMapping(value = "{authKey}/", method = RequestMethod.POST)
-    public ResponseEntity<String> addPayment(@PathVariable("authKey") long authKey, @RequestBody Payment payment) {
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<String> addPayment(@RequestHeader("Authentication") long authKey, @RequestBody Payment payment) {
         if (sessionService.authenticate(authKey)) {
             payment.setPid((payment.getUid() + payment.getPaymentDate().toString() + new Date().toString()).hashCode());
+
+            // the client is not supposed to send the amount to be charged since it can be easily altered.
+            // instead the food item's fId is sent.
+            double amount = foodService.getPriceOf(payment.getItem());
+            payment.setAmount(amount);
 
             // for credit cards we only keep the last 4 digits of the card number for,
             // security concerns.

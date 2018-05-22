@@ -79,9 +79,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean isPasswordCorrect(String email, String password) {
+    public boolean isPasswordCorrect(String email, long password) {
         User user = userRepository.findByEmail(email);
-        boolean validity = (user != null) && (user.getPassword().equals(password));
+        boolean validity = (user != null) && (user.getPassword() == password);
 
         return validity;
     }

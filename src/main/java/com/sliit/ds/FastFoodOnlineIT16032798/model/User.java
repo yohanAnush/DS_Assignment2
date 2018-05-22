@@ -22,8 +22,7 @@ public class User {
     @NotEmpty
     private String address;
 
-    @NotEmpty
-    private String password;
+    private long password;
 
     public User() { }
 
@@ -66,11 +65,11 @@ public class User {
         this.address = address;
     }
 
-    public String getPassword() {
+    public long getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(long password) {
         this.password = password;
     }
 }

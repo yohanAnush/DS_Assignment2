@@ -13,6 +13,7 @@ public class Payment {
     private long pid;
     private long uid;
     private double amount;
+    private String item;
     private String paymentType;
     private Date paymentDate;
     private Map<String, String> paymentDetails;
@@ -51,6 +52,14 @@ public class Payment {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public String getItem() {
+        return item;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
     }
 
     public String getPaymentType() {

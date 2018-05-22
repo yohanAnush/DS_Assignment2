@@ -9,15 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@CrossOrigin
 @RequestMapping(value = "/user")
+@CrossOrigin(origins = "http://localhost:8080")
 public class UserController {
 
     @Autowired
@@ -33,26 +32,48 @@ public class UserController {
     }
 
     // GET specific user by its uid, email or name.
+    // never send the actual password back; use the password related method for that.
     @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUserByUid(@RequestParam("id") long uid) {
-        return new ResponseEntity<>(userService.findByUid(uid), HttpStatus.OK);
+    public ResponseEntity<User> getUserByUid(@PathVariable("id") long uid) {
+        User user = userService.findByUid(uid);
+        user.setPassword(0);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/email/{email}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
-        return new ResponseEntity<>(userService.findByEmail(email), HttpStatus.OK);
+    public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
+        User user = userService.findByEmail(email);
+        user.setPassword(0);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/name/{name}", method = RequestMethod.GET)
     public ResponseEntity<List<User>> getUserByName(@PathVariable("name") String name) {
-        return new ResponseEntity<>(userService.findUsersHavingName(name), HttpStatus.OK);
+        List<User> users = userService.findUsersHavingName(name);
+        users.forEach(user -> user.setPassword(0)); // replace everyone's password with an empty string.
+
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
 
     // ADD a new user.
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> addUser(@RequestBody User user) {
-        user.setUid((user.getEmail()+user.getName()).hashCode());
+    public ResponseEntity<String> addUser(@RequestBody Map<String, Object> payload) {
+        // the reason why we use the payload Map instead of directly getting the User object is that,
+        // we store the password has a hashed number but the password is sent to us as a normal string in JSON.
+        // therefore there's going to be some conflict in the setter/getter for password.
+        // therefore, we set the parameters manually, during which, we hash the password and then set it.
+        User user = new User();
+
+        user.setEmail(payload.get("email").toString());
+        user.setName(payload.get("name").toString());
+        user.setUid((user.getEmail() + user.getName()).hashCode());
+        user.setAddress(payload.get("address").toString());
+        user.setMobileNumber(Integer.parseInt(payload.get("mobileNumber").toString()));
+        user.setPassword(payload.get("unhashedPassword").toString().hashCode());
+
         userService.saveUser(user);
         // TODO ensure the email is not already in the database.
 
@@ -90,8 +111,8 @@ public class UserController {
     public ResponseEntity<HashMap<String, Object>> issueAuthKey(@RequestBody Map<String, Object> payload) {
 
         String email = payload.get("email").toString();
-        String password = payload.get("password").toString();
-        boolean validUser = userService.isPasswordCorrect(email, password);  // will return false if the user is not there anyways.
+        long hashedPassword = payload.get("password").toString().hashCode();
+        boolean validUser = userService.isPasswordCorrect(email, hashedPassword);  // will return false if the user is not there anyways.
         Map<String, Object> response = new HashMap<>();
 
         // if the user is there and the password is correct,

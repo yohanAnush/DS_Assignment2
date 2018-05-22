@@ -12,6 +12,8 @@ public interface FoodService {
 
     List<Food> findFoodContainingName(String name);
 
+    double getPriceOf(String fId);
+
     void saveFood(Food food);
 
     void updateFood(Food foodUpdate);
