@@ -1,5 +1,6 @@
 package com.sliit.ds.FastFoodOnlineIT16032798.controller;
 
+import com.sliit.ds.FastFoodOnlineIT16032798.helper.PaymentHelper;
 import com.sliit.ds.FastFoodOnlineIT16032798.model.Payment;
 import com.sliit.ds.FastFoodOnlineIT16032798.repository.SessionRepository;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.FoodServiceImpl;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,9 @@ public class PaymentController {
     private SessionServiceImpl sessionService = new SessionServiceImpl();
 
     @Autowired
-    private FoodServiceImpl foodService;
+    private FoodServiceImpl foodService = new FoodServiceImpl();
+
+    private PaymentHelper paymentHelper = new PaymentHelper();
 
 
     // GET all payment entries in the database.
@@ -65,9 +69,21 @@ public class PaymentController {
             if (payment.getPaymentType().equals("card")) {
                 Map<String, String> paymentDetails = payment.getPaymentDetails();
                 String cardNumber = paymentDetails.get("number");
-                String censoredCardNumber = "xxxx-xxxx-xxxx-" + cardNumber.substring(12, 16);
+                String censoredCardNumber = "xxxx-xxxx-xxxx-" + cardNumber.substring(cardNumber.length()-4, cardNumber.length());
                 paymentDetails.put("number", censoredCardNumber);
             }
+
+            // contact the payment gateway.
+            // for card => Sampath Bank Payment Gateway.
+            try {
+                paymentHelper.makePayment(payment);
+            }
+            catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+
+            // for crediting to the dialog bill => Dialog Ez Pay.
+
 
             paymentService.savePayment(payment);
             return ResponseEntity.status(HttpStatus.CREATED).build();
