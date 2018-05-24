@@ -15,7 +15,6 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/food")
-@CrossOrigin(origins = "http://localhost:8080")
 public class FoodController {
 
     @Autowired
@@ -26,6 +25,8 @@ public class FoodController {
 
 
     // GET all the food items in the database.
+
+    @CrossOrigin(origins = "http://localhost:8080")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Food>> getAllFoodWithAuth() {
         // here, we want to show available food items to anyone regardless they have logged into or not,
@@ -34,6 +35,7 @@ public class FoodController {
     }
 
     // GET a food item buy its id.
+    @CrossOrigin(origins = "http://localhost:8080")
     @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
     public ResponseEntity<Food> getFoodById(@RequestHeader("Authentication") long authKey, @PathVariable("id") String id) {
         if (sessionService.authenticate(authKey)) {
@@ -46,12 +48,14 @@ public class FoodController {
     }
 
     // FIND a food item by its name.
+    @CrossOrigin(origins = "http://localhost:8080")
     @RequestMapping(value = "/name/{name}", method = RequestMethod.GET)
     public ResponseEntity<List<Food>> getFoodByName(@RequestHeader("Authentication") long authKey, @PathVariable String name) {
         return new ResponseEntity<>(foodService.findFoodContainingName(name), HttpStatus.OK);
     }
 
     // ADD a new food item.
+    @CrossOrigin(origins = "http://localhost:8080")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> addFood(@RequestHeader("Authentication") long authKey, @RequestBody Map<String, Object> payload/*@RequestParam String name, @RequestParam int servingCount, @RequestParam ArrayList<String> ingredients, @RequestParam double price*/) {
         Food food = new Food(payload);
@@ -61,6 +65,7 @@ public class FoodController {
     }
 
     // UPDATE an existing food item.(Update everything but the name).
+    @CrossOrigin(origins = "http://localhost:8080")
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<String> updateFood(@RequestHeader("Authentication") long authKey, @RequestBody Map<String, Object> payload) {
         Food foodUpdate = new Food(payload);

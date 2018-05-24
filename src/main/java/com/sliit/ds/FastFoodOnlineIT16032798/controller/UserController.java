@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Controller
 @RequestMapping(value = "/user")
@@ -39,6 +40,24 @@ public class UserController {
         user.setPassword(0);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    // GET a random user. This is for selecting a winner for staying at a luxry hotel.
+    // only admins with administrative authentication keys can call this.
+    @RequestMapping(value = "/random", method = RequestMethod.GET)
+    public ResponseEntity<User> selectWinner(@RequestHeader("Authentication") long authKey) {
+        // we need to verify both the authentication key itself and that it belongs to an admin as well.
+        String role = sessionService.getRoleOfAuthentication(authKey);
+        System.out.println(role);
+
+        User winner = new User();
+
+        if (role.equals("admin")) {
+            List<User> users = userService.findAllUsers();
+            winner = users.get(ThreadLocalRandom.current().nextInt(0, users.size()-1));
+        }
+
+        return new ResponseEntity<>(winner, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/email/{email}", method = RequestMethod.GET)
@@ -95,18 +114,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    // VALIDATE user.
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<HashMap<String,String>> login(@RequestBody Map<String, Object> payload) {
-        String email = payload.get("email").toString();
-        String password = payload.get("email").toString();
-
-        HashMap<String, String> status = new HashMap<>();
-        status.put("success", "true");
-       return new ResponseEntity(status, HttpStatus.OK);
-    }
-
-    // AUTHENTICATION.
+    // AUTHENTICATION.(sort of acts as a login method as well).
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<HashMap<String, Object>> issueAuthKey(@RequestBody Map<String, Object> payload) {
 
@@ -123,10 +131,12 @@ public class UserController {
             Session session = new Session();
             session.setUid(userService.getUidOfEmail(email));
             session.setAuthKeyOfUid(authKey);
+            session.setRole("user");
             sessionService.saveSession(session);
 
             response.put("success", true);
             response.put("data", session);
+            response.put("redirect", "home.html");
 
             return new ResponseEntity(response, HttpStatus.OK);
         }

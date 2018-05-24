@@ -2,7 +2,6 @@ package com.sliit.ds.FastFoodOnlineIT16032798.controller;
 
 import com.sliit.ds.FastFoodOnlineIT16032798.helper.PaymentHelper;
 import com.sliit.ds.FastFoodOnlineIT16032798.model.Payment;
-import com.sliit.ds.FastFoodOnlineIT16032798.repository.SessionRepository;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.FoodServiceImpl;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.PaymentServiceImpl;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.SessionServiceImpl;
@@ -12,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,16 +52,45 @@ public class PaymentController {
         return new ResponseEntity<>(paymentService.findByUid(uid), HttpStatus.OK);
     }
 
+    // GET loyalty points count of a given user.
+    @RequestMapping(value = "/{uid}/loyalty", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, String>> getTotalLoyaltyPoints(@RequestHeader("Authentication") long authKey,@PathVariable("uid") long uid) {
+        Map<String, String> response = new HashMap<>();
+
+        if (sessionService.authenticate(authKey)) {
+            List<Payment> paymentsByUser = paymentService.findByUid(uid);
+            double tot = 0;
+
+            for(Payment payment: paymentsByUser) { tot += payment.getLoyaltyPoints(); }
+
+            response.put("success", "true");
+            response.put("loyalty", Double.toString(tot));
+        }
+        else {
+            response.put("success", "false");
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     // ADD new entry for payment.
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> addPayment(@RequestHeader("Authentication") long authKey, @RequestBody Payment payment) {
+    public ResponseEntity<Map<String, String>> addPayment(@RequestHeader("Authentication") long authKey, @RequestBody Payment payment) {
+        Map<String, String> response = new HashMap<>();
+
         if (sessionService.authenticate(authKey)) {
             payment.setPid((payment.getUid() + payment.getPaymentDate().toString() + new Date().toString()).hashCode());
 
             // the client is not supposed to send the amount to be charged since it can be easily altered.
-            // instead the food item's fId is sent.
-            double amount = foodService.getPriceOf(payment.getItem());
-            payment.setAmount(amount);
+            // instead the fId and count of each is sent.
+            double tot = 0;
+            Map<String, Integer> items = payment.getItemsAndCounts();
+            // calculate
+            for (String fId: items.keySet()) { tot += (foodService.getPriceOf(fId) * items.get(fId)); }
+            payment.setAmount(tot);
+
+            // give loyalty points for the amount.
+            payment.setLoyaltyPoints(tot * (0.01/100));
 
             // for credit cards we only keep the last 4 digits of the card number for,
             // security concerns.
@@ -73,24 +101,19 @@ public class PaymentController {
                 paymentDetails.put("number", censoredCardNumber);
             }
 
-            // contact the payment gateway.
-            // for card => Sampath Bank Payment Gateway.
-            try {
-                paymentHelper.makePayment(payment);
-            }
-            catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-
-            // for crediting to the dialog bill => Dialog Ez Pay.
-
-
+            // we aren't technically contacting any payment gateways :(
+            // but we'll direct if the payment is successful.
             paymentService.savePayment(payment);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            response.put("success", "true");
+            response.put("redirect", "bill.html");
+            response.put("pid", Long.toString(payment.getPid()));
         }
         else {
-            return new ResponseEntity<>("Authentication key required in API call.", HttpStatus.BAD_REQUEST);
+            response.put("success", "false");
+            response.put("redirect", "buy.html");
         }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 

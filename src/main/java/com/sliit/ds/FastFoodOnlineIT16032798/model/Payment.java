@@ -13,7 +13,8 @@ public class Payment {
     private long pid;
     private long uid;
     private double amount;
-    private String item;
+    private double loyaltyPoints;
+    private Map<String, Integer> itemsAndCounts;
     private String paymentType;
     private Date paymentDate;
     private Map<String, String> paymentDetails;
@@ -54,12 +55,20 @@ public class Payment {
         this.amount = amount;
     }
 
-    public String getItem() {
-        return item;
+    public double getLoyaltyPoints() {
+        return loyaltyPoints;
     }
 
-    public void setItem(String item) {
-        this.item = item;
+    public void setLoyaltyPoints(double loyaltyPoints) {
+        this.loyaltyPoints = loyaltyPoints;
+    }
+
+    public Map<String, Integer> getItemsAndCounts() {
+        return itemsAndCounts;
+    }
+
+    public void setItemsAndCounts(Map<String, Integer> itemsAndCounts) {
+        this.itemsAndCounts = itemsAndCounts;
     }
 
     public String getPaymentType() {

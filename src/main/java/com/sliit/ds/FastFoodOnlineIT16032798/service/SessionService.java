@@ -2,11 +2,19 @@ package com.sliit.ds.FastFoodOnlineIT16032798.service;
 
 import com.sliit.ds.FastFoodOnlineIT16032798.model.Session;
 
+import java.util.List;
+
 public interface SessionService {
 
     Session getSessionOf(long uid);     // returns both authkey and the uid as an Object.
 
+    List<Session> getAdminSessions();    // returns sessions that has an admin role.
+
+    List<Session> getUserSessions();     // returns sessions that has user role.
+
     long getUidOfSession(long authKey); // returns the uid of the user to whom the auth key belongs.
+
+    String getRoleOfAuthentication(long authKey);
 
     boolean authenticate(long autheKey);// simply checks if the auth key exists in the db :-)
 

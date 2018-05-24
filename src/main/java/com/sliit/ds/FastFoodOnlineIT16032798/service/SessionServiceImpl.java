@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service("sessionService")
 @Transactional
 public class SessionServiceImpl implements SessionService {
@@ -19,9 +21,33 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    public List<Session> getAdminSessions() {
+        return sessionRepository.findByRole("admin");
+    }
+
+    @Override
+    public List<Session> getUserSessions() {
+        return sessionRepository.findByRole("user");
+
+    }
+
+    @Override
     public long getUidOfSession(long authKey) {
         Session session = sessionRepository.findByAuthKeyOfUid(authKey);
         return (session != null) ? session.getUid() : 0;
+    }
+
+    @Override
+    public String getRoleOfAuthentication(long authKey) {
+        Session session = sessionRepository.findByAuthKeyOfUid(authKey);
+        String role = "invalid";
+
+        if (session != null) {
+            System.out.println(role);
+            role = session.getRole();
+        }
+
+        return role;
     }
 
     @Override

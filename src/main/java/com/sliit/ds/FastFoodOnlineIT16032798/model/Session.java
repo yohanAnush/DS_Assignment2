@@ -9,6 +9,7 @@ public class Session {
     @Id
     private long uid;
     private long authKeyOfUid;
+    private String role;
 
     public Session() { }
 
@@ -26,5 +27,15 @@ public class Session {
 
     public void setAuthKeyOfUid(long authKeyOfUid) {
         this.authKeyOfUid = authKeyOfUid;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    // we don't create any role beside user since admin roles are already created and won't invole
+    // registering.
+    public void setRole(String role) {
+        this.role = role;
     }
 }
