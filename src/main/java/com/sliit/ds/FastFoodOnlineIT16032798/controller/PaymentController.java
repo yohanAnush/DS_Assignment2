@@ -59,7 +59,7 @@ public class PaymentController {
 
         if (sessionService.authenticate(authKey)) {
             List<Payment> paymentsByUser = paymentService.findByUid(uid);
-            double tot = 0;
+//            double tot = 0;
 
             for(Payment payment: paymentsByUser) { tot += payment.getLoyaltyPoints(); }
 
