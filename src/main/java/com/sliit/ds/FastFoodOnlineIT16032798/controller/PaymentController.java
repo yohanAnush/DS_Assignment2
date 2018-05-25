@@ -1,5 +1,6 @@
 package com.sliit.ds.FastFoodOnlineIT16032798.controller;
 
+import com.sliit.ds.FastFoodOnlineIT16032798.config.Config;
 import com.sliit.ds.FastFoodOnlineIT16032798.helper.PaymentHelper;
 import com.sliit.ds.FastFoodOnlineIT16032798.model.Payment;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.FoodServiceImpl;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/payment")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = Config.allowedOrigin)
 public class PaymentController {
 
 
@@ -52,9 +53,30 @@ public class PaymentController {
         return new ResponseEntity<>(paymentService.findByUid(uid), HttpStatus.OK);
     }
 
+    // GET total price of food ordering.
+    @RequestMapping(value = "/total", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> getTotalAmountToPay(@RequestHeader("Authentication") long authKey, @RequestBody Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        double total = 0;
+
+        // go through each fid and it's count.
+        for (String fid: payload.keySet()) {
+            int itemCount = Integer.parseInt(payload.get(fid).toString());
+            double itemPrice = foodService.getPriceOf(fid);
+            double subtotal = itemPrice * itemCount;
+
+            total += subtotal;
+        }
+
+        response.put("success", "true");
+        response.put("amount", total);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     // GET loyalty points count of a given user.
     @RequestMapping(value = "/{uid}/loyalty", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, String>> getTotalLoyaltyPoints(@RequestHeader("Authentication") long authKey,@PathVariable("uid") long uid) {
+    public ResponseEntity<Map<String, String>> getTotalLoyaltyPoints(@RequestHeader("Authentication") long authKey, @PathVariable("uid") long uid) {
         Map<String, String> response = new HashMap<>();
 
         if (sessionService.authenticate(authKey)) {
@@ -105,7 +127,7 @@ public class PaymentController {
             // but we'll direct if the payment is successful.
             paymentService.savePayment(payment);
             response.put("success", "true");
-            response.put("redirect", "bill.html");
+            response.put("redirect", "home.html");
             response.put("pid", Long.toString(payment.getPid()));
         }
         else {

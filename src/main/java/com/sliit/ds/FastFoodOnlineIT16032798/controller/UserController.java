@@ -1,5 +1,6 @@
 package com.sliit.ds.FastFoodOnlineIT16032798.controller;
 
+import com.sliit.ds.FastFoodOnlineIT16032798.config.Config;
 import com.sliit.ds.FastFoodOnlineIT16032798.model.Session;
 import com.sliit.ds.FastFoodOnlineIT16032798.model.User;
 import com.sliit.ds.FastFoodOnlineIT16032798.service.SessionServiceImpl;
@@ -17,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Controller
 @RequestMapping(value = "/user")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = Config.allowedOrigin)
 public class UserController {
 
     @Autowired
@@ -45,19 +46,29 @@ public class UserController {
     // GET a random user. This is for selecting a winner for staying at a luxry hotel.
     // only admins with administrative authentication keys can call this.
     @RequestMapping(value = "/random", method = RequestMethod.GET)
-    public ResponseEntity<User> selectWinner(@RequestHeader("Authentication") long authKey) {
+    public ResponseEntity<Map<String, Object>> selectWinner(@RequestHeader("Authentication") long authKey) {
         // we need to verify both the authentication key itself and that it belongs to an admin as well.
         String role = sessionService.getRoleOfAuthentication(authKey);
-        System.out.println(role);
-
         User winner = new User();
+        Map<String, Object> response = new HashMap<>();
 
         if (role.equals("admin")) {
             List<User> users = userService.findAllUsers();
             winner = users.get(ThreadLocalRandom.current().nextInt(0, users.size()-1));
+
+            response.put("success", "true");
+            response.put("data", winner);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        else {
+            response.put("success", "false");
+            response.put("data", "Unauthorized");
+
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
-        return new ResponseEntity<>(winner, HttpStatus.OK);
+
     }
 
     @RequestMapping(value = "/email/{email}", method = RequestMethod.GET)
@@ -78,8 +89,10 @@ public class UserController {
 
 
     // ADD a new user.
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> addUser(@RequestBody Map<String, Object> payload) {
+    @RequestMapping( method = RequestMethod.POST)
+    public ResponseEntity<Map<String, String>> addUser(@RequestBody Map<String, Object> payload) {
+        Map<String, String> response = new HashMap<>();
+
         // the reason why we use the payload Map instead of directly getting the User object is that,
         // we store the password has a hashed number but the password is sent to us as a normal string in JSON.
         // therefore there's going to be some conflict in the setter/getter for password.
@@ -93,10 +106,19 @@ public class UserController {
         user.setMobileNumber(Integer.parseInt(payload.get("mobileNumber").toString()));
         user.setPassword(payload.get("unhashedPassword").toString().hashCode());
 
-        userService.saveUser(user);
         // TODO ensure the email is not already in the database.
+        User existingUser = userService.findByEmail(user.getEmail());
+        if (existingUser == null ) {
+            response.put("success", "true");
+            response.put("redirect", "login.html");
+            userService.saveUser(user);
+        }
+        else {
+            response.put("success", "false");
+            response.put("redirect", "reg.html");
+        }
 
-        return ResponseEntity.status((HttpStatus.CREATED)).build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
