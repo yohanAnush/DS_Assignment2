@@ -43,7 +43,6 @@ public class SessionServiceImpl implements SessionService {
         String role = "invalid";
 
         if (session != null) {
-            System.out.println(role);
             role = session.getRole();
         }
 

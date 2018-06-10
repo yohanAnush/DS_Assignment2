@@ -11,6 +11,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     User findByEmail(String email);
     User findByName(String name);
     // TODO find by mobile number.
+
     List<User> findUsersByNameContaining(String name);
 
     void deleteByEmail(String email);
